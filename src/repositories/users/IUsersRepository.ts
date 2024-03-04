@@ -6,11 +6,11 @@ export type IUsersRepository = {
 
 export type IUsersRepositoryAuthData = {
     id: string;
-    name: string;
+    password: string;
 }
 
 export type UsersRepository = {
-    find: (id: string) => Promise<IUsersRepository[] | any>;
+    find: (id: string) => Promise<IUsersRepository>;
     session: (id: string) => Promise<void>;
     list: () => Promise<IUsersRepository[]>;
 }
