@@ -21,8 +21,6 @@ const findTableUseCase = new FindTableUseCase(firebirdTablesRepository);
 const listTablesUseCase = new ListTableUseCase(firebirdTablesRepository);
 const setBusyTableUseCase = new SetBusyTableUseCase(firebirdTablesRepository);
 
-
-
 router.post('/signin', async (req: Request, res: Response) => {
     try {
         const { userId, password } = req.body;

@@ -9,7 +9,7 @@ export class ListUsersUseCase {
         try {
             const users = await this.usersRepository.list();
 
-            return users
+            return users;
         } catch (err) {
             return Promise.reject(err)
         }
