@@ -28,6 +28,7 @@ router.post('/signin', async (req: Request, res: Response) => {
         const user = await authUserUseCase.execute({ id: userId, password });
 
         res.status(201).json({ user });
+        console.log(user);
     } catch (err) {
         console.log(err)
         res.status(400).json(err);

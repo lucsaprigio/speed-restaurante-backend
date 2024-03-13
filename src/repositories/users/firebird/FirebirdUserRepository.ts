@@ -33,7 +33,7 @@ export class FirebirdUserRepository implements UsersRepository {
 
     async list() {
         try {
-            const users = await executeQuery(`SELECT * FROM DB_MOB_OPERADORES`, []);
+            const users = await executeQuery(`SELECT CD_OPERADOR as userId, NOME_OPERADOR as name FROM DB_MOB_OPERADORES`, []);
 
 
             return users as IUsersRepository[];
