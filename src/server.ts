@@ -8,6 +8,6 @@ dotenv.config();
 app.use(express.json());
 app.use(router);
 
-app.listen(3333, () => {
-  console.log("Servidor rodando na porta 3333!")
+app.listen(8082, () => {
+  console.log("Servidor rodando na porta 8082!")
 });
