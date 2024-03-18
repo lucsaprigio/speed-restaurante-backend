@@ -24,12 +24,19 @@ export class FirebirdSalesRepository implements SalesRepository {
         }
     }
 
-    async createSale({ closed, obs, tableId, total }): Promise<void> {
+    async createSale({ closed, obs, tableId, total, launchs }: ISalesRepositoryCreate) {
         try {
             await executeTransaction(`
                 INSERT INTO DB_MOB_PEDIDO_CABE (CD_PEDIDO, CD_MESA, OBS, TOTAL, FECHADO)
                 VALUES (gen_id(db_mob_pedido_cabe, 1), ${tableId}, ${obs}, ${total}, ${closed})
             `, []);
+
+            for (let i = 0; i < launchs.length; i++)
+            await executeTransaction(`
+            INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
+            total_produto, obs_produto, cd_pedido)
+            VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, ${launchs[i].productDescription}, ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, ${launchs[i].obsProduct}, ${launchs[i].saleId}
+            )`, []);
         } catch (err) {
             return Promise.reject(err);
         }
@@ -37,11 +44,7 @@ export class FirebirdSalesRepository implements SalesRepository {
 
     async createSaleLaunch({ descount, productDescription, obsProduct, price, productId, quantity, saleId, totalProduct }) {
         try {
-            await executeTransaction(`
-            INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
-            total_produto, obs_produto, cd_pedido)
-            VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${productId}, ${productDescription}, ${price}, ${descount}, ${quantity}, ${totalProduct}, ${obsProduct}, ${saleId}
-            )`, []);
+
         } catch (error) {
             return Promise.reject(error)
         }

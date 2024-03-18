@@ -11,9 +11,11 @@ export type ISalesRepositoryCreate = {
     obs: string;
     closed: string;
     total: number;
+    launchs: ISaleLaunchCreate[]
 }
 
-export type ISaleLaunchCreate = {
+//@ts-ignore
+export type ISaleLaunchCreate = Array<T> & {
     launchQuantity: number,
     saleId: string;
     productId: string;

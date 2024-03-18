@@ -7,19 +7,37 @@ import { FirebirdProductRepository } from "./repositories/products/firebird/Fire
 import { FindTableUseCase } from "./use-cases/tables/find-table-use-case";
 import { ListTableUseCase } from "./use-cases/tables/list-tables-use-case";
 import { SetBusyTableUseCase } from "./use-cases/tables/set-busy-table-use-case";
+import { FirebirdSalesRepository } from "./repositories/sales/firebird/FirebirdSalesRepository";
+import { CreateSaleUseCase } from "./use-cases/sales/create-sale-use-case";
+import { ISalesRepositoryCreate } from "./repositories/sales/ISalesRepository";
+import { FindSaleUseCase } from "./use-cases/sales/find-tale-use-case";
+import { FindProductUseCase } from "./use-cases/products/find-product-use-case";
+import { ListProductsUseCase } from "./use-cases/products/list-products-use-case";
+import { IProductsRepository, ProductsRepository } from "./repositories/products/IProductsRepository";
 
 export const router = Router();
 
 const firebirdUserRepository = new FirebirdUserRepository();
 const firebirdTablesRepository = new FirebirdTablesRepository();
 const firebirdProductsRepository = new FirebirdProductRepository();
+const firebirdSalesRepository = new FirebirdSalesRepository();
 
+// User
 const authUserUseCase = new AuthUserUseCase(firebirdUserRepository);
 const listUsersUseCase = new ListUsersUseCase(firebirdUserRepository);
 
+// Tables (Mesas)
 const findTableUseCase = new FindTableUseCase(firebirdTablesRepository);
 const listTablesUseCase = new ListTableUseCase(firebirdTablesRepository);
 const setBusyTableUseCase = new SetBusyTableUseCase(firebirdTablesRepository);
+
+// Sales (Vendas)
+const createSaleUseCase = new CreateSaleUseCase(firebirdSalesRepository);
+const findSaleUseCase = new FindSaleUseCase(firebirdSalesRepository);
+
+//Produtos
+const listProductsUseCase = new ListProductsUseCase(firebirdProductsRepository);
+const findProductUseCase = new FindProductUseCase(firebirdProductsRepository);
 
 router.post('/signin', async (req: Request, res: Response) => {
     try {
@@ -56,3 +74,57 @@ router.get('/tables', async (req: Request, res: Response) => {
         res.status(400).json(err);
     }
 });
+
+router.post('/new-sale', async (req: Request, res: Response) => {
+    try {
+        const { tableId, obs, total, launchs }: ISalesRepositoryCreate = req.body;
+
+        await setBusyTableUseCase.execute(tableId);
+
+        await createSaleUseCase.execute({ tableId, obs, total, closed: 'N', launchs });
+
+        res.status(201).json({ message: 'Venda criada com sucesso!' });
+    } catch (err) {
+        console.log(err)
+        res.status(400).json(err);
+    }
+});
+
+router.get('sale/:saleId', async (req: Request, res: Response) => {
+    try {
+        const { saleId } = req.params;
+
+        const sale = await findSaleUseCase.execute(saleId);
+
+        res.status(201).json(sale)
+    } catch (err) {
+        console.log(err)
+        res.status(400).json(err);
+    }
+});
+
+router.get('/products', async (req: Request, res: Response) => {
+    try {
+        const products: IProductsRepository[] = await listProductsUseCase.execute();
+
+        console.log(products);
+        res.status(201).json({ products });
+    } catch (err) {
+        console.log(err)
+        res.status(400).json(err);
+    }
+});
+
+router.get('/product/:productId', async (req: Request, res: Response) => {
+    try {
+        const { productId } = req.params;
+
+        const product = await findProductUseCase.execute(productId);
+
+        res.status(201).json({ product });
+    } catch (err) {
+        console.log(err)
+        res.status(400).json(err);
+    }
+});
+

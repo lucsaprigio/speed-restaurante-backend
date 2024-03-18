@@ -17,7 +17,7 @@ export var dbOptions = {
     database: '/database/dadosgc/mobile/teste.fdb',
     user: 'sysdba',
     password: 'masterkey',
-  };
+};
 
 async function executeTransaction(ssql: string, params: any) {
     return new Promise((resolve, reject) => {
@@ -51,14 +51,14 @@ async function executeTransaction(ssql: string, params: any) {
     })
 }
 
-async function executeQuery(query: string, params: any[]) {
-    return new Promise((resolve, reject) => {
+async function executeQuery(query: string, params: any[]): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
         firebird.attachOrCreate(dbOptions, (err, db) => {
             if (err) {
                 return reject(err)
             }
 
-            db.query(query, params, (err, result: []) => {
+            db.query(query, params, (err, result: any[]) => {
                 if (err) {
                     return reject(err)
                 }

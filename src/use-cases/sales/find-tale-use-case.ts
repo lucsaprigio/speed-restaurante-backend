@@ -1,13 +1,15 @@
 import { ISalesRepositoryCreate, SalesRepository } from "../../repositories/sales/ISalesRepository";
 
-export class CreateSaleUseCase {
+export class FindSaleUseCase {
     constructor(
         private salesRepository: SalesRepository
     ) { }
 
-    async execute({ tableId, closed, obs, total, launchs }: ISalesRepositoryCreate) {
+    async execute(id: string) {
         try {
-            await this.salesRepository.createSale({ tableId, closed, obs, total, launchs });
+            const sale = await this.salesRepository.find(id);
+
+            return sale;
         } catch (err) {
             return Promise.reject(err);
         }
