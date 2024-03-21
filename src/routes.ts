@@ -138,7 +138,7 @@ router.get('/categories', async (req: Request, res: Response) => {
     try {
         const categories = await listCategoriesUseCase.execute();
 
-        res.status(201).json(categories);
+        res.status(201).json();
     } catch (err) {
         console.log(err)
         res.status(400).json(err);
