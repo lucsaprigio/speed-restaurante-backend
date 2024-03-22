@@ -13,7 +13,9 @@ import { ISalesRepositoryCreate } from "./repositories/sales/ISalesRepository";
 import { FindSaleUseCase } from "./use-cases/sales/find-tale-use-case";
 import { FindProductUseCase } from "./use-cases/products/find-product-use-case";
 import { ListProductsUseCase } from "./use-cases/products/list-products-use-case";
-import { IProductsRepository, ProductsRepository } from "./repositories/products/IProductsRepository";
+import { IProductsRepository } from "./repositories/products/IProductsRepository";
+import { ListCategoriesUseCase } from "./use-cases/categories/list-categories-use-case";
+import { FirebirdCategoriesRepository } from "./repositories/categories/Firebird/FirebirdCategoriesRepository";
 
 export const router = Router();
 
@@ -21,6 +23,7 @@ const firebirdUserRepository = new FirebirdUserRepository();
 const firebirdTablesRepository = new FirebirdTablesRepository();
 const firebirdProductsRepository = new FirebirdProductRepository();
 const firebirdSalesRepository = new FirebirdSalesRepository();
+const firebirdCategoriesRepository = new FirebirdCategoriesRepository();
 
 // User
 const authUserUseCase = new AuthUserUseCase(firebirdUserRepository);
@@ -35,9 +38,12 @@ const setBusyTableUseCase = new SetBusyTableUseCase(firebirdTablesRepository);
 const createSaleUseCase = new CreateSaleUseCase(firebirdSalesRepository);
 const findSaleUseCase = new FindSaleUseCase(firebirdSalesRepository);
 
-//Produtos
+// Produtos
 const listProductsUseCase = new ListProductsUseCase(firebirdProductsRepository);
 const findProductUseCase = new FindProductUseCase(firebirdProductsRepository);
+
+// Categorias
+const listCategoriesUseCase = new ListCategoriesUseCase(firebirdCategoriesRepository);
 
 router.post('/signin', async (req: Request, res: Response) => {
     try {
@@ -108,6 +114,9 @@ router.get('/products', async (req: Request, res: Response) => {
         const products: IProductsRepository[] = await listProductsUseCase.execute();
 
         res.status(201).json({ products });
+
+        res.status(201).json(products);
+
     } catch (err) {
         console.log(err)
         res.status(400).json(err);
@@ -120,7 +129,19 @@ router.get('/product/:productId', async (req: Request, res: Response) => {
 
         const product = await findProductUseCase.execute(productId);
 
+        console.log(product);
         res.status(201).json({ product });
+    } catch (err) {
+        console.log(err)
+        res.status(400).json(err);
+    }
+});
+
+router.get('/categories', async (req: Request, res: Response) => {
+    try {
+        const categories = await listCategoriesUseCase.execute();
+
+        res.status(201).json();
     } catch (err) {
         console.log(err)
         res.status(400).json(err);
