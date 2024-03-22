@@ -113,10 +113,7 @@ router.get('/products', async (req: Request, res: Response) => {
     try {
         const products: IProductsRepository[] = await listProductsUseCase.execute();
 
-        res.status(201).json({ products });
-
         res.status(201).json(products);
-
     } catch (err) {
         console.log(err)
         res.status(400).json(err);
@@ -141,7 +138,7 @@ router.get('/categories', async (req: Request, res: Response) => {
     try {
         const categories = await listCategoriesUseCase.execute();
 
-        res.status(201).json();
+        res.status(201).json(categories);
     } catch (err) {
         console.log(err)
         res.status(400).json(err);

@@ -19,8 +19,8 @@ export var dbOptions = {
     password: 'masterkey',
 };
 
-async function executeTransaction(ssql: string, params: any) {
-    return new Promise((resolve, reject) => {
+async function executeTransaction(ssql: string, params: any): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
         firebird.attach(dbOptions, (err, db) => {
             if (err) {
                 console.log(err);

@@ -1,5 +1,5 @@
 import { executeQuery, executeTransaction } from "../../../firebird/firebird";
-import { ISaleLaunch, ISalesRepository, ISalesRepositoryCreate, SalesRepository } from "../ISalesRepository";
+import { ISaleId, ISaleLaunch, ISalesRepository, ISalesRepositoryCreate, SalesRepository } from "../ISalesRepository";
 
 export class FirebirdSalesRepository implements SalesRepository {
     async find(id: string) {
@@ -26,28 +26,26 @@ export class FirebirdSalesRepository implements SalesRepository {
 
     async createSale({ closed, obs, tableId, total, launchs }: ISalesRepositoryCreate) {
         try {
-            await executeTransaction(`
+            var sale: { CD_PEDIDO: number } = await executeTransaction(`
                 INSERT INTO DB_MOB_PEDIDO_CABE (CD_PEDIDO, CD_MESA, OBS, TOTAL, FECHADO)
-                VALUES (gen_id(db_mob_pedido_cabe, 1), ${tableId}, ${obs}, ${total}, ${closed})
+                VALUES (gen_id(db_mob_pedido_cabe, 1), ${tableId}, '${obs}', ${total}, '${closed}')
+                RETURNING CD_PEDIDO
             `, []);
+            console.log(sale);
 
-            console.log(`
-            INSERT INTO DB_MOB_PEDIDO_CABE (CD_PEDIDO, CD_MESA, OBS, TOTAL, FECHADO)
-            VALUES (gen_id(db_mob_pedido_cabe, 1), ${tableId}, ${obs}, ${total}, ${closed})`)
 
             for (let i = 0; i < launchs.length; i++) {
+                console.log(`
+                INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
+                total_produto, obs_produto, cd_pedido)
+                VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${sale.CD_PEDIDO}
+                )`)
 
                 await executeTransaction(`
                 INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
                     total_produto, obs_produto, cd_pedido)
-                    VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, ${launchs[i].productDescription}, ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, ${launchs[i].obsProduct}, ${launchs[i].saleId}
+                    VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${sale.CD_PEDIDO}
                     )`, []);
-
-                console.log(`
-            INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
-            total_produto, obs_produto, cd_pedido)
-            VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, ${launchs[i].productDescription}, ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, ${launchs[i].obsProduct}, ${launchs[i].saleId}
-            )`)
             }
         } catch (err) {
             return Promise.reject(err);

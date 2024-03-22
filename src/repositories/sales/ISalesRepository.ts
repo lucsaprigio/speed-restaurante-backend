@@ -40,6 +40,10 @@ export type ISaleLaunch = {
     obsProduct: number;
 }
 
+export type ISaleId = {
+    saleId: string;
+}
+
 export type SalesRepository = {
     find: (id: string) => Promise<ISaleLaunch | any>;
     createSale: (data: ISalesRepositoryCreate) => Promise<void>;
