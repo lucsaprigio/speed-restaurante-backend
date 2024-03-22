@@ -107,7 +107,6 @@ router.get('/products', async (req: Request, res: Response) => {
     try {
         const products: IProductsRepository[] = await listProductsUseCase.execute();
 
-        console.log(products);
         res.status(201).json({ products });
     } catch (err) {
         console.log(err)

@@ -1,4 +1,4 @@
-import { ProductsRepository } from "../../repositories/products/IProductsRepository";
+import { IProductsRepository, ProductsRepository } from "../../repositories/products/IProductsRepository";
 
 export class ListProductsUseCase {
     constructor(
@@ -13,7 +13,7 @@ export class ListProductsUseCase {
                 return Promise.reject('Nenhum produto encontrado.')
             }
 
-            return products;
+            return products as IProductsRepository[];
         } catch (err) {
             return Promise.reject(err);
         }

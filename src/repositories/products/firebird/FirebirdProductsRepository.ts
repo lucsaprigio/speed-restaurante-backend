@@ -16,6 +16,8 @@ export class FirebirdProductRepository implements ProductsRepository {
         try {
             const products: IProductsRepository[] = await executeQuery(`SELECT * FROM DB_MOB_PRODUTOS`, []);
 
+            console.log(products)
+
             return products as IProductsRepository[];
         } catch (err) {
             return Promise.reject(err);
