@@ -1,20 +1,32 @@
 import { executeQuery, executeTransaction } from "../../../firebird/firebird";
-import { ISaleId, ISaleLaunch, ISalesRepository, ISalesRepositoryCreate, SalesRepository } from "../ISalesRepository";
+import { ISaleLaunch, ISaleLaunchCreate, ISalesLaunchRepositoryUpdate, ISalesRepository, ISalesRepositoryCreate, SalesRepository } from "../ISalesRepository";
 
 export class FirebirdSalesRepository implements SalesRepository {
     async find(id: string) {
         try {
-            const sale = await executeQuery(`
-            SELECT CD_PEDIDO, CD_MESA, OBS, 
+            console.log(`
+            SELECT DB_MOB_PEDIDO_CABE.CD_PEDIDO, DB_MOB_PEDIDO_CABE.CD_MESA, OBS, 
             FECHADO, TOTAL, CD_PRODUTO, 
             DESCRICAO_PRODUTO, DESCONTO_PRODUTO,
             OBS_PRODUTO,
             QTD_PRODUTO,
             UNIT_PRODUTO,
-            TOTAL_PRODUTO,
-            FROM DB_MOB_PEDIDO,
+            TOTAL_PRODUTO
+            FROM DB_MOB_PEDIDO_CABE
             INNER JOIN DB_MOB_PEDIDO_LANCA ON DB_MOB_PEDIDO_CABE.CD_PEDIDO = DB_MOB_PEDIDO_LANCA.CD_PEDIDO 
-            WHERE CD_PEDIDO = ${id}          
+            WHERE DB_MOB_PEDIDO_CABE.CD_PEDIDO = ${id}`)
+
+            const sale = await executeQuery(`
+            SELECT DB_MOB_PEDIDO_CABE.CD_PEDIDO, DB_MOB_PEDIDO_CABE.CD_MESA, OBS, 
+            FECHADO, TOTAL, CD_PRODUTO, 
+            DESCRICAO_PRODUTO, DESCONTO_PRODUTO,
+            OBS_PRODUTO,
+            QTD_PRODUTO,
+            UNIT_PRODUTO,
+            TOTAL_PRODUTO
+            FROM DB_MOB_PEDIDO_CABE
+            INNER JOIN DB_MOB_PEDIDO_LANCA ON DB_MOB_PEDIDO_CABE.CD_PEDIDO = DB_MOB_PEDIDO_LANCA.CD_PEDIDO 
+            WHERE DB_MOB_PEDIDO_CABE.CD_PEDIDO = ${id}          
             `, []);
 
             return sale;
@@ -31,7 +43,6 @@ export class FirebirdSalesRepository implements SalesRepository {
                 VALUES (gen_id(db_mob_pedido_cabe, 1), ${tableId}, '${obs}', ${total}, '${closed}')
                 RETURNING CD_PEDIDO
             `, []);
-            console.log(sale);
 
 
             for (let i = 0; i < launchs.length; i++) {
@@ -52,11 +63,18 @@ export class FirebirdSalesRepository implements SalesRepository {
         }
     }
 
-    async createSaleLaunch({ descount, productDescription, obsProduct, price, productId, quantity, saleId, totalProduct }) {
+    async addToSale({ launchs, saleId }: ISalesLaunchRepositoryUpdate) {
         try {
-
-        } catch (error) {
-            return Promise.reject(error)
+            for (let i = 0; i < launchs.length; i++) {
+                await executeTransaction(`
+                INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
+                    total_produto, obs_produto, cd_pedido)
+                    VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${saleId}
+                    )`, []);
+            }
+        } catch (err) {
+            Promise.reject(err);
+            console.log(err);
         }
     }
 

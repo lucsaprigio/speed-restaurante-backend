@@ -16,6 +16,8 @@ import { ListProductsUseCase } from "./use-cases/products/list-products-use-case
 import { IProductsRepository } from "./repositories/products/IProductsRepository";
 import { ListCategoriesUseCase } from "./use-cases/categories/list-categories-use-case";
 import { FirebirdCategoriesRepository } from "./repositories/categories/Firebird/FirebirdCategoriesRepository";
+import { AddToSateUseCase } from "./use-cases/sales/add-to-sale-use-case";
+import { UpdateSaleUseCase } from "./use-cases/sales/update-sale-use-case";
 
 export const router = Router();
 
@@ -37,6 +39,8 @@ const setBusyTableUseCase = new SetBusyTableUseCase(firebirdTablesRepository);
 // Sales (Vendas)
 const createSaleUseCase = new CreateSaleUseCase(firebirdSalesRepository);
 const findSaleUseCase = new FindSaleUseCase(firebirdSalesRepository);
+const addToSaleUseCase = new AddToSateUseCase(firebirdSalesRepository);
+const updateSaleUseCase = new UpdateSaleUseCase(firebirdSalesRepository);
 
 // Produtos
 const listProductsUseCase = new ListProductsUseCase(firebirdProductsRepository);
@@ -83,7 +87,7 @@ router.get('/tables', async (req: Request, res: Response) => {
 
 router.post('/new-sale', async (req: Request, res: Response) => {
     try {
-        const { tableId, obs, total, launchs }: ISalesRepositoryCreate = req.body;
+        const { tableId, obs, total, launchs, }: ISalesRepositoryCreate = req.body;
 
         await setBusyTableUseCase.execute(tableId);
 
@@ -96,13 +100,28 @@ router.post('/new-sale', async (req: Request, res: Response) => {
     }
 });
 
-router.get('sale/:saleId', async (req: Request, res: Response) => {
+router.get('/sale/:saleId', async (req: Request, res: Response) => {
     try {
         const { saleId } = req.params;
 
         const sale = await findSaleUseCase.execute(saleId);
 
         res.status(201).json(sale)
+    } catch (err) {
+        console.log(err)
+        res.status(400).json(err);
+    }
+});
+
+router.post('update-sale/:saleId', async (req: Request, res: Response) => {
+    try {
+        const { saleId } = req.params;
+        const { launchs, tableId, closed, obs, total } = req.body;
+
+        await updateSaleUseCase.execute({ tableId, closed, obs, total })
+
+        await addToSaleUseCase.execute({ launchs, saleId })
+
     } catch (err) {
         console.log(err)
         res.status(400).json(err);

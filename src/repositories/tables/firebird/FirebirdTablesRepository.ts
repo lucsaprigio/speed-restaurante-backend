@@ -25,7 +25,12 @@ export class FirebirdTablesRepository implements TablesRepository {
 
     async setBusy(id: string) {
         try {
-            await executeTransaction(`update db_mob_mesas set ocupada = 'S' where cd_mesa = ${id}`, []);
+            var saleId: { CD_PEDIDO: number } = await executeTransaction(`SELECT COALESCE(MAX(CD_PEDIDO), 0) + 1 as CD_PEDIDO FROM DB_MOB_PEDIDO_CABE`, []);
+            console.log(saleId[0].CD_PEDIDO);
+
+            console.log(`update db_mob_mesas set ocupada = 'S', cd_pedido = ${saleId[0]} where cd_mesa = ${id}`);
+
+            await executeTransaction(`update db_mob_mesas set ocupada = 'S', cd_pedido = ${saleId[0].CD_PEDIDO} where cd_mesa = ${id}`, []);
         } catch (err) {
             return Promise.reject(err)
         }
