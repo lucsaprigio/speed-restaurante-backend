@@ -36,6 +36,16 @@ export class FirebirdSalesRepository implements SalesRepository {
         }
     }
 
+    async findSaleLaunch(productId: string, saleId: string) {
+        try {
+            const saleLaunch = await executeTransaction(`SELECT * FROM DB_MOB_PEDIDO_LANCA WHERE CD_PRODUTO = ${productId} and CD_PEDIDO = ${saleId}`, []);
+
+            return saleLaunch as ISaleLaunch;
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
     async createSale({ closed, obs, tableId, total, launchs }: ISalesRepositoryCreate) {
         try {
             var sale: { CD_PEDIDO: number } = await executeTransaction(`
@@ -66,11 +76,23 @@ export class FirebirdSalesRepository implements SalesRepository {
     async addToSale({ launchs, saleId }: ISalesLaunchRepositoryUpdate) {
         try {
             for (let i = 0; i < launchs.length; i++) {
-                await executeTransaction(`
-                INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
-                    total_produto, obs_produto, cd_pedido)
-                    VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${saleId}
-                    )`, []);
+                let product = await executeTransaction(`
+                    select cd_produto, cd_pedido from db_mob_pedido_lanca where cd_produto = ${launchs[i].productId} and cd_pedido = ${saleId}
+                `, []);
+
+
+                if (!product) {
+                    await executeTransaction(`
+                    INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
+                        total_produto, obs_produto, cd_pedido)
+                        VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${saleId}
+                        )`, []);
+                } else {
+                    await executeTransaction(`
+                        UPDATE DB_MOB_PEDIDO_LANCA SET
+                        QTD_PRODUTO = QTD_PRODUTO + ${launchs[i].quantity}
+                    `, []);
+                }
             }
         } catch (err) {
             Promise.reject(err);
@@ -81,9 +103,9 @@ export class FirebirdSalesRepository implements SalesRepository {
     async updateSale({ closed, obs, tableId, total }: ISalesRepository) {
         try {
             await executeTransaction(`UPDATE db_mob_pedido_cabe
-            set cd_mesa = ${tableId}
-                obs = ${obs}
-                fechado = ${closed}
+            set cd_mesa = '${tableId}',
+                obs = '${obs}',
+                fechado = '${closed}',
                 total = ${total}
                 `, [])
         } catch (err) {
@@ -97,10 +119,10 @@ export class FirebirdSalesRepository implements SalesRepository {
                 UPDATE DB_MOB_PEDIDO_LANCA SET
                 QTD_PRODUTO = ${quantity},
                 TOTAL_PRODUTO = ${totalProduct},
-                OBS_PRODUTO = ${obsProduct},
+                OBS_PRODUTO = '${obsProduct}',
                 DESCONTO_PRODUTO = ${descount}
                 WHERE ITEN = ${id}
-            `, [])
+            `, []);
         } catch (err) {
             return Promise.reject(err)
         }

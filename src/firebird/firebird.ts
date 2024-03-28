@@ -37,11 +37,13 @@ async function executeTransaction(ssql: string, params: any): Promise<any> {
                     if (err) {
                         transaction.rollback(() => {
                             db.detach();
+                            console.log(ssql);
                             return reject(err);
                         });
                     } else {
                         transaction.commit(() => {
                             db.detach();
+                            console.log(ssql);
                             return resolve(result);
                         })
                     }

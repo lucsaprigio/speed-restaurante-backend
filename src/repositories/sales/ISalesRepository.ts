@@ -51,6 +51,7 @@ export type ISaleId = {
 
 export type SalesRepository = {
     find: (id: string) => Promise<ISaleLaunch | any>;
+    findSaleLaunch: (productId: string, saleId: string) => Promise<ISaleLaunch>;
     createSale: (data: ISalesRepositoryCreate) => Promise<void>;
     updateSale: ({ tableId, closed, obs, total }: ISalesRepository) => Promise<void>;
     updateSaleLaunch: ({ id, quantity, totalProduct, obsProduct, descount }: ISaleLaunch) => Promise<void>;

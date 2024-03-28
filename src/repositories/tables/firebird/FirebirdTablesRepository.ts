@@ -17,7 +17,6 @@ export class FirebirdTablesRepository implements TablesRepository {
             const tables = await executeQuery(`SELECT * FROM DB_MOB_MESAS`, []);
 
             return tables;
-
         } catch (err) {
             return Promise.reject(err);
         }

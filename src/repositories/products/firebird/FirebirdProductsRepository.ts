@@ -20,8 +20,6 @@ export class FirebirdProductRepository implements ProductsRepository {
                 INNER JOIN DB_MOB_CATEGORIAS ON DB_MOB_PRODUTOS.CD_CATEGORIA = DB_MOB_CATEGORIAS.CD_CATEGORIA
                 `, []);
 
-            console.log(products)
-
             return products as IProductsRepository[];
         } catch (err) {
             return Promise.reject(err);

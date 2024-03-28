@@ -10,7 +10,7 @@ import { SetBusyTableUseCase } from "./use-cases/tables/set-busy-table-use-case"
 import { FirebirdSalesRepository } from "./repositories/sales/firebird/FirebirdSalesRepository";
 import { CreateSaleUseCase } from "./use-cases/sales/create-sale-use-case";
 import { ISalesRepositoryCreate } from "./repositories/sales/ISalesRepository";
-import { FindSaleUseCase } from "./use-cases/sales/find-tale-use-case";
+import { FindSaleUseCase } from "./use-cases/sales/find-sale-use-case";
 import { FindProductUseCase } from "./use-cases/products/find-product-use-case";
 import { ListProductsUseCase } from "./use-cases/products/list-products-use-case";
 import { IProductsRepository } from "./repositories/products/IProductsRepository";
@@ -52,6 +52,7 @@ const listCategoriesUseCase = new ListCategoriesUseCase(firebirdCategoriesReposi
 router.post('/signin', async (req: Request, res: Response) => {
     try {
         const { userId, password } = req.body;
+        console.log(userId, password);
 
         const user = await authUserUseCase.execute({ id: userId, password });
 
@@ -113,14 +114,14 @@ router.get('/sale/:saleId', async (req: Request, res: Response) => {
     }
 });
 
-router.post('update-sale/:saleId', async (req: Request, res: Response) => {
+router.post('/update-sale/:saleId', async (req: Request, res: Response) => {
     try {
         const { saleId } = req.params;
         const { launchs, tableId, closed, obs, total } = req.body;
 
-        await updateSaleUseCase.execute({ tableId, closed, obs, total })
+        await updateSaleUseCase.execute({ tableId, closed, obs, total });
 
-        await addToSaleUseCase.execute({ launchs, saleId })
+        await addToSaleUseCase.execute({ launchs, saleId });
 
     } catch (err) {
         console.log(err)
