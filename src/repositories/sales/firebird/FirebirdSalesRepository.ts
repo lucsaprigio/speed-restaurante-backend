@@ -56,12 +56,6 @@ export class FirebirdSalesRepository implements SalesRepository {
 
 
             for (let i = 0; i < launchs.length; i++) {
-                console.log(`
-                INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
-                total_produto, obs_produto, cd_pedido)
-                VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${sale.CD_PEDIDO}
-                )`)
-
                 await executeTransaction(`
                 INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
                     total_produto, obs_produto, cd_pedido)
@@ -80,8 +74,7 @@ export class FirebirdSalesRepository implements SalesRepository {
                     select cd_produto, cd_pedido from db_mob_pedido_lanca where cd_produto = ${launchs[i].productId} and cd_pedido = ${saleId}
                 `, []);
 
-
-                if (!product) {
+                if (product.length <= 0) {
                     await executeTransaction(`
                     INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
                         total_produto, obs_produto, cd_pedido)

@@ -146,7 +146,6 @@ router.get('/product/:productId', async (req: Request, res: Response) => {
 
         const product = await findProductUseCase.execute(productId);
 
-        console.log(product);
         res.status(201).json({ product });
     } catch (err) {
         console.log(err)
