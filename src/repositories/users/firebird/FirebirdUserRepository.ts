@@ -2,6 +2,19 @@ import { executeQuery, executeTransaction } from "../../../firebird/firebird";
 import { getCurrentDate } from "../../../utils/date";
 import { IUsersRepository, UsersRepository } from "../IUsersRepository";
 
+/* 
+CREATE TABLE DB_MOB_OPERADORES (
+    CD_OPERADOR INTEGER NOT NULL,
+    NOME_OPERADOR VARCHAR(30),
+    SENHA_OPERADOR VARCHAR(20));
+
+ALTER TABLE DB_MOB_OPERADORES
+ADD CONSTRAINT PK_DB_MOB_OPERADORES
+PRIMARY KEY (CD_OPERADOR);
+
+CREATE SEQUENCE GEN_DB_MOB_OPERADORES_ID;
+*/
+
 export class FirebirdUserRepository implements UsersRepository {
     async find(id: string) {
         try {

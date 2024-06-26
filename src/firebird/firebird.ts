@@ -14,7 +14,7 @@ const parsedConfig = ini.parse(config); */
 export var dbOptions = {
     host: '192.168.0.61',
     port: 3050,
-    database: '/database/dadosgc/mobile/teste.fdb',
+    database: '/database/dadosgc/mobile/mobile.fdb',
     user: 'sysdba',
     password: 'masterkey',
 };
