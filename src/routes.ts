@@ -19,6 +19,7 @@ import { FirebirdCategoriesRepository } from "./repositories/categories/Firebird
 import { AddToSateUseCase } from "./use-cases/sales/add-to-sale-use-case";
 import { UpdateSaleUseCase } from "./use-cases/sales/update-sale-use-case";
 import { ListAllProductsUseCase } from "./use-cases/products/list-all-products-use-case";
+import { SessionUserUseCase } from "./use-cases/users/session-user-use-case";
 
 export const router = Router();
 
@@ -31,6 +32,7 @@ const firebirdCategoriesRepository = new FirebirdCategoriesRepository();
 // User
 const authUserUseCase = new AuthUserUseCase(firebirdUserRepository);
 const listUsersUseCase = new ListUsersUseCase(firebirdUserRepository);
+const sessionUserUsecase = new SessionUserUseCase(firebirdUserRepository);
 
 // Tables (Mesas)
 const findTableUseCase = new FindTableUseCase(firebirdTablesRepository);
@@ -65,6 +67,19 @@ router.post('/signin', async (req: Request, res: Response) => {
         res.status(400).json(err);
     }
 });
+
+router.post('/session/:userId', async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+
+        const session = await sessionUserUsecase.execute(userId);
+
+        res.status(201).json({ session });
+    } catch (err) {
+        res.status(400).json({ err });
+    }
+});
+
 
 router.get('/users', async (req: Request, res: Response) => {
     try {
@@ -133,8 +148,8 @@ router.post('/update-sale/:saleId', async (req: Request, res: Response) => {
 
 router.get('/products', async (req: Request, res: Response) => {
     try {
-        // const products: IProductsRepository[] = await listProductsUseCase.execute();
-        const products: IProductsRegistered[] = await listAllProducts.execute();
+        const products: IProductsRepository[] = await listProductsUseCase.execute();
+        // const products: IProductsRegistered[] = await listAllProducts.execute();
 
         res.status(201).json(products);
     } catch (err) {

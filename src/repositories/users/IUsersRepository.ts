@@ -1,7 +1,10 @@
 export type IUsersRepository = {
     id: string;
     name: string;
-    password: string
+    password: string;
+    commission: number;
+    initial: string;
+    final: string;
 }
 
 export type IUsersRepositoryAuthData = {

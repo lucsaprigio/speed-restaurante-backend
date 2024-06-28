@@ -8,8 +8,9 @@ export class AuthUserUseCase {
 
     async execute({ id, password }: IUsersRepositoryAuthData) {
         try {
-
             const user = await this.usersRepository.find(id);
+
+
             if (user.password.toString() !== password) {
                 return Promise.reject('Usuário ou senha incorretos');
             }

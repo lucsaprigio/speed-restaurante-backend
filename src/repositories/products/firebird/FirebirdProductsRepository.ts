@@ -19,7 +19,7 @@ export class FirebirdProductRepository implements ProductsRepository {
             const products: IProductsRepository[] = await executeQuery(`
                 SELECT CD_PRODUTO, DESCRICAO_PRODUTO, VR_UNITARIO, DB_MOB_PRODUTOS.CD_CATEGORIA, DESCRICAO_CATEGORIA 
                 FROM DB_MOB_REST_PROD
-                INNER JOIN DB_MOB_CATEGORIAS ON DB_MOB_PRODUTOS.CD_CATEGORIA = DB_MOB_CATEGORIAS.CD_CATEGORIA
+                INNER JOIN DB_MOB_CATEGORIA ON DB_MOB_PRODUTOS.CD_CATEGORIA = DB_MOB_CATEGORIA.CD_CATEGORIA
                 `, []);
 
             return products as IProductsRepository[];
