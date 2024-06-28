@@ -1,20 +1,7 @@
 import { executeQuery } from "../../../firebird/firebird";
-import { IProductComplements, IProductsRepository, ProductsRepository } from "../IProductsRepository";
+import { IProductComplements, IProductsRegistered, IProductsRepository, ProductsRepository } from "../IProductsRepository";
 
-/* 
-CREATE TABLE DB_MOB_PEDIDO_CABE (
-    CD_PEDIDO INTEGER NOT NULL,
-    CD_MESA INTEGER,
-    OBS VARCHAR(50),
-    TOTAL NUMERIC(15,2),
-    FECHADO INTEGER);
 
-ALTER TABLE DB_MOB_PEDIDO_CABE
-ADD CONSTRAINT PK_DB_MOB_PEDIDO_CABE
-PRIMARY KEY (CD_PEDIDO);
-
-CREATE SEQUENCE DB_MOB_PEDIDO_CABE;
-*/
 
 export class FirebirdProductRepository implements ProductsRepository {
     async find(id: string) {
@@ -46,7 +33,28 @@ export class FirebirdProductRepository implements ProductsRepository {
 
         } catch (err) {
             return Promise.reject(err);
+        }
+    }
 
+    async listProductRegistered() {
+        try {
+            const products: IProductsRegistered[] = await executeQuery(`
+        SELECT
+            DB_PRODUTOS_CADASTROS_SUB.subprodutos,
+            DB_PRODUTOS_CADASTROS.DESCRICAO_PRODUTO,
+            COALESCE(DB_PRODUTOS_CUSTOS.venda_produto, 0) AS VENDA_PRODUTO,
+            COALESCE(DB_PRODUTOS_CADASTROS.cd_subgrupos, 0) AS CD_SUBGRUPOS,
+            DB_SUBGRUPOS.descricao_subgrupo
+        FROM DB_PRODUTOS_CADASTROS_SUB
+        INNER JOIN db_produtos_cadastros ON DB_PRODUTOS_CADASTROS_SUB.subprodutos = DB_PRODUTOS_CADASTROS.cd_produto
+        INNER JOIN DB_PRODUTOS_CUSTOS ON DB_PRODUTOS_CADASTROS_SUB.subprodutos = DB_PRODUTOS_CUSTOS.cd_produto
+        LEFT JOIN db_subgrupos ON db_produtos_cadastros.cd_subgrupos = db_subgrupos.cd_subgrupos
+        WHERE DB_PRODUTOS_CADASTROS.CD_PRODUTO  > 0 AND VENDA_PRODUTO > 0
+    `, []);
+
+            return products as IProductsRegistered[];
+        } catch (err) {
+            return Promise.reject(err);
         }
     }
 }

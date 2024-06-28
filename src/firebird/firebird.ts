@@ -1,8 +1,5 @@
 import firebird from 'node-firebird';
 
-import ini from 'ini';
-import fs from 'fs';
-
 /* 
 const dirConfig = './src/Config.ini';
 
@@ -12,9 +9,9 @@ const dir = __dirname;
 const parsedConfig = ini.parse(config); */
 
 export var dbOptions = {
-    host: '192.168.0.61',
+    host: '192.168.0.81',
     port: 3050,
-    database: '/database/dadosgc/mobile/mobile.fdb',
+    database: '/database/clientes/30685945000155/gc.gdb',
     user: 'sysdba',
     password: 'masterkey',
 };
@@ -53,10 +50,12 @@ async function executeTransaction(ssql: string, params: any): Promise<any> {
     })
 }
 
+// Execução
 async function executeQuery(query: string, params: any[]): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
         firebird.attachOrCreate(dbOptions, (err, db) => {
             if (err) {
+                console.log(query)
                 return reject(err)
             }
 
@@ -64,6 +63,7 @@ async function executeQuery(query: string, params: any[]): Promise<any[]> {
                 if (err) {
                     return reject(err)
                 }
+                console.log(query)
                 return resolve(result)
             })
         })

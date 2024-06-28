@@ -13,7 +13,7 @@ ALTER TABLE DB_MOB_CATEGORIA ADD CONSTRAINT PK_DB_MOB_CATEGORIA PRIMARY KEY (CD_
 export class FirebirdCategoriesRepository implements CategoriesRepository {
     async list() {
         try {
-            const categories = await executeQuery(`SELECT * FROM DB_MOB_CATEGORIAS`, []);
+            const categories = await executeQuery(`SELECT * FROM DB_MOB_CATEGORIA`, []);
 
             return categories as ICategoriesRepository[]
         } catch (err) {

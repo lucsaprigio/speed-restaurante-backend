@@ -13,11 +13,12 @@ import { ISalesRepositoryCreate } from "./repositories/sales/ISalesRepository";
 import { FindSaleUseCase } from "./use-cases/sales/find-sale-use-case";
 import { FindProductUseCase } from "./use-cases/products/find-product-use-case";
 import { ListProductsUseCase } from "./use-cases/products/list-products-use-case";
-import { IProductsRepository } from "./repositories/products/IProductsRepository";
+import { IProductsRegistered, IProductsRepository } from "./repositories/products/IProductsRepository";
 import { ListCategoriesUseCase } from "./use-cases/categories/list-categories-use-case";
 import { FirebirdCategoriesRepository } from "./repositories/categories/Firebird/FirebirdCategoriesRepository";
 import { AddToSateUseCase } from "./use-cases/sales/add-to-sale-use-case";
 import { UpdateSaleUseCase } from "./use-cases/sales/update-sale-use-case";
+import { ListAllProductsUseCase } from "./use-cases/products/list-all-products-use-case";
 
 export const router = Router();
 
@@ -45,6 +46,7 @@ const updateSaleUseCase = new UpdateSaleUseCase(firebirdSalesRepository);
 // Produtos
 const listProductsUseCase = new ListProductsUseCase(firebirdProductsRepository);
 const findProductUseCase = new FindProductUseCase(firebirdProductsRepository);
+const listAllProducts = new ListAllProductsUseCase(firebirdProductsRepository);
 
 // Categorias
 const listCategoriesUseCase = new ListCategoriesUseCase(firebirdCategoriesRepository);
@@ -131,7 +133,8 @@ router.post('/update-sale/:saleId', async (req: Request, res: Response) => {
 
 router.get('/products', async (req: Request, res: Response) => {
     try {
-        const products: IProductsRepository[] = await listProductsUseCase.execute();
+        // const products: IProductsRepository[] = await listProductsUseCase.execute();
+        const products: IProductsRegistered[] = await listAllProducts.execute();
 
         res.status(201).json(products);
     } catch (err) {
