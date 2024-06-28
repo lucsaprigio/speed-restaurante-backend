@@ -1,5 +1,5 @@
 import { executeQuery, executeTransaction } from "../../../firebird/firebird";
-import { ISaleLaunch, ISaleLaunchCreate, ISalesLaunchRepositoryUpdate, ISalesRepository, ISalesRepositoryCreate, SalesRepository } from "../ISalesRepository";
+import { ISaleLaunch, ISalesLaunchRepositoryUpdate, ISalesRepository, ISalesRepositoryCreate, SalesRepository } from "../ISalesRepository";
 
 export class FirebirdSalesRepository implements SalesRepository {
     async find(id: string) {
