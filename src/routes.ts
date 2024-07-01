@@ -76,7 +76,7 @@ router.post('/session/:userId', async (req: Request, res: Response) => {
 
         res.status(201).json({ session });
     } catch (err) {
-        res.status(400).json({ err });
+        res.status(402).json({ err });
     }
 });
 
