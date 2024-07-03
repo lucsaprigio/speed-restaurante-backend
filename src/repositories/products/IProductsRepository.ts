@@ -15,15 +15,18 @@ export type IProductsRegistered = {
 }
 
 export type IProductComplements = {
-    id: string;
-    productId: string;
-    complementDescription: string;
-    complementPrice: string;
+    ITEN: string;
+    CD_PRODUTO: string;
+    DESCRICAO_COMPLEMENTO: string;
+    ADICIONAL: string;
+    QTD_COMPLEMENTO: number;
+    VR_UNIT: number;
 }
 
 export type ProductsRepository = {
     list: () => Promise<IProductsRepository[]>;
-    listProductRegistered: () => Promise<IProductsRegistered[]>
+    listProductRegistered: () => Promise<IProductsRegistered[]>;
     find: (id: string) => Promise<IProductsRepository[] | null>;
     listProductComplements: (id: string) => Promise<IProductComplements[] | null>
+    listProductAdditional: (id: string) => Promise<IProductComplements[] | null>;
 }
