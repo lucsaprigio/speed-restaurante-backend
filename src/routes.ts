@@ -13,13 +13,14 @@ import { ISalesRepositoryCreate } from "./repositories/sales/ISalesRepository";
 import { FindSaleUseCase } from "./use-cases/sales/find-sale-use-case";
 import { FindProductUseCase } from "./use-cases/products/find-product-use-case";
 import { ListProductsUseCase } from "./use-cases/products/list-products-use-case";
-import { IProductsRegistered, IProductsRepository } from "./repositories/products/IProductsRepository";
+import { IProductsRepository } from "./repositories/products/IProductsRepository";
 import { ListCategoriesUseCase } from "./use-cases/categories/list-categories-use-case";
 import { FirebirdCategoriesRepository } from "./repositories/categories/Firebird/FirebirdCategoriesRepository";
 import { AddToSateUseCase } from "./use-cases/sales/add-to-sale-use-case";
 import { UpdateSaleUseCase } from "./use-cases/sales/update-sale-use-case";
 import { ListAllProductsUseCase } from "./use-cases/products/list-all-products-use-case";
 import { SessionUserUseCase } from "./use-cases/users/session-user-use-case";
+import { ListProductComplementsUseCase } from "./use-cases/complements/list-product-complements-use-case";
 
 export const router = Router();
 
@@ -48,7 +49,7 @@ const updateSaleUseCase = new UpdateSaleUseCase(firebirdSalesRepository);
 // Produtos
 const listProductsUseCase = new ListProductsUseCase(firebirdProductsRepository);
 const findProductUseCase = new FindProductUseCase(firebirdProductsRepository);
-const listAllProducts = new ListAllProductsUseCase(firebirdProductsRepository);
+const listProductComplementsUseCase = new ListProductComplementsUseCase(firebirdProductsRepository);
 
 // Categorias
 const listCategoriesUseCase = new ListCategoriesUseCase(firebirdCategoriesRepository);
@@ -170,6 +171,20 @@ router.get('/product/:productId', async (req: Request, res: Response) => {
         res.status(400).json(err);
     }
 });
+
+router.get('/complement/:productId', async (req: Request, res: Response) => {
+    try {
+        const { productId } = req.params;
+
+        const complements = await listProductComplementsUseCase.execute(productId);
+
+        res.status(201).json({ complements });
+    } catch (err) {
+        console.log(err)
+        res.status(400).json(err);
+    }
+});
+
 
 router.get('/categories', async (req: Request, res: Response) => {
     try {
