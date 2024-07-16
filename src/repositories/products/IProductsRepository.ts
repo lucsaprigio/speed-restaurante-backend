@@ -28,5 +28,4 @@ export type ProductsRepository = {
     listProductRegistered: () => Promise<IProductsRegistered[]>;
     find: (id: string) => Promise<IProductsRepository[] | null>;
     listProductComplements: (id: string) => Promise<IProductComplements[] | null>
-    listProductAdditional: (id: string) => Promise<IProductComplements[] | null>;
 }

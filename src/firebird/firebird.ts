@@ -9,9 +9,9 @@ const dir = __dirname;
 const parsedConfig = ini.parse(config); */
 
 export var dbOptions = {
-    host: 'localhost',
+    host: '192.168.0.81',
     port: 3050,
-    database: 'c:\\gc\\gc.gdb',
+    database: '/database/dadosgc/edirceu/gc.gdb',
     user: 'sysdba',
     password: 'masterkey',
 };
