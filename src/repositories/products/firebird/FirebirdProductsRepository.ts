@@ -1,4 +1,4 @@
-import { executeQuery } from "../../../firebird/firebird";
+import { executeQuery, executeTransaction } from "../../../firebird/firebird";
 import { IProductComplements, IProductsRegistered, IProductsRepository, ProductsRepository } from "../IProductsRepository";
 
 
@@ -6,7 +6,8 @@ import { IProductComplements, IProductsRegistered, IProductsRepository, Products
 export class FirebirdProductRepository implements ProductsRepository {
     async find(id: string) {
         try {
-            const product = await executeQuery(`SELECT * FROM DB_MOB_REST_PROD WHERE CD_PRODUTO = ${id}`, []);
+            const product = await executeTransaction(`
+                SELECT * FROM DB_MOB_REST_PROD WHERE CD_PRODUTO = ${id}`, []);
 
             return product[0];
         } catch (err) {
@@ -48,16 +49,6 @@ export class FirebirdProductRepository implements ProductsRepository {
             return Promise.reject(err);
         }
     }
-
-    async listProductAdditional(id: string) {
-        try {
-
-        } catch (err) {
-            return Promise.reject(err);
-
-        }
-
-    };
 
     async listProductRegistered() {
         try {
