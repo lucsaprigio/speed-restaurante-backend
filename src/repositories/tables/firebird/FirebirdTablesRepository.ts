@@ -1,16 +1,6 @@
 import { executeQuery, executeTransaction } from "../../../firebird/firebird";
 import { ITablesRepository, TablesRepository } from "../ITablesRepository";
 
-/* 
-CREATE TABLE DB_MOB_MESAS (
-    CD_MESA INTEGER NOT NULL,
-    OCUPADA VARCHAR(1),
-    CD_PEDIDO INTEGER);
-
-ALTER TABLE DB_MOB_MESAS
-ADD CONSTRAINT PK_DB_MOB_MESAS
-PRIMARY KEY (CD_MESA);
-*/
 
 export class FirebirdTablesRepository implements TablesRepository {
     async find(id: string) {
