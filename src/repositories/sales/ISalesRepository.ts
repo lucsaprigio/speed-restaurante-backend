@@ -2,12 +2,14 @@ export type ISalesRepository = {
     id?: string;
     tableId: string;
     obs: string;
-    closed: string;
+    closed?: string;
     total: number;
+    userId: string;
 }
 
 export type ISalesRepositoryCreate = {
     tableId: string;
+    userId: string;
     obs: string;
     closed: string;
     total: number;
@@ -29,7 +31,8 @@ export type ISaleLaunchCreate = Array<T> & {
     price: number;
     descount: number;
     totalProduct: number;
-    obsProduct: number;
+    obsProduct: string;
+    additional: string;
 }
 
 export type ISaleLaunch = {
@@ -53,7 +56,7 @@ export type SalesRepository = {
     find: (id: string) => Promise<ISaleLaunch | any>;
     findSaleLaunch: (productId: string, saleId: string) => Promise<ISaleLaunch>;
     createSale: (data: ISalesRepositoryCreate) => Promise<void>;
-    updateSale: ({ tableId, closed, obs, total }: ISalesRepository) => Promise<void>;
+    updateSale: ({ tableId, obs, total }: ISalesRepository) => Promise<void>;
     updateSaleLaunch: ({ id, quantity, totalProduct, obsProduct, descount }: ISaleLaunch) => Promise<void>;
     addToSale: (data: ISalesLaunchRepositoryUpdate) => Promise<void>;
     deleteSale: (id: string) => Promise<void>;

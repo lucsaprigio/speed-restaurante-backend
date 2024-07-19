@@ -106,11 +106,11 @@ router.get('/tables', async (req: Request, res: Response) => {
 
 router.post('/new-sale', async (req: Request, res: Response) => {
     try {
-        const { tableId, obs, total, launchs, }: ISalesRepositoryCreate = req.body;
+        const { tableId, obs, total, launchs, userId }: ISalesRepositoryCreate = req.body;
 
         await setBusyTableUseCase.execute(tableId);
 
-        await createSaleUseCase.execute({ tableId, obs, total, closed: 'N', launchs });
+        await createSaleUseCase.execute({ tableId, obs, total, closed: 'N', launchs, userId });
 
         res.status(201).json({ message: 'Venda criada com sucesso!' });
     } catch (err) {
@@ -135,9 +135,9 @@ router.get('/sale/:saleId', async (req: Request, res: Response) => {
 router.post('/update-sale/:saleId', async (req: Request, res: Response) => {
     try {
         const { saleId } = req.params;
-        const { launchs, tableId, closed, obs, total } = req.body;
+        const { launchs, tableId, obs, total, userId } = req.body;
 
-        await updateSaleUseCase.execute({ tableId, closed, obs, total });
+        await updateSaleUseCase.execute({ tableId, obs, total, userId });
 
         await addToSaleUseCase.execute({ launchs, saleId });
 
