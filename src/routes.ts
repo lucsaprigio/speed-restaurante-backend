@@ -21,6 +21,7 @@ import { UpdateSaleUseCase } from "./use-cases/sales/update-sale-use-case";
 import { ListAllProductsUseCase } from "./use-cases/products/list-all-products-use-case";
 import { SessionUserUseCase } from "./use-cases/users/session-user-use-case";
 import { ListProductComplementsUseCase } from "./use-cases/complements/list-product-complements-use-case";
+import { ListSalesUseCase } from "./use-cases/sales/list-sales-use-case";
 
 export const router = Router();
 
@@ -45,6 +46,7 @@ const createSaleUseCase = new CreateSaleUseCase(firebirdSalesRepository);
 const findSaleUseCase = new FindSaleUseCase(firebirdSalesRepository);
 const addToSaleUseCase = new AddToSateUseCase(firebirdSalesRepository);
 const updateSaleUseCase = new UpdateSaleUseCase(firebirdSalesRepository);
+const listSalesUseCase = new ListSalesUseCase(firebirdSalesRepository);
 
 // Produtos
 const listProductsUseCase = new ListProductsUseCase(firebirdProductsRepository);
@@ -81,6 +83,20 @@ router.post('/session/:userId', async (req: Request, res: Response) => {
     }
 });
 
+router.get('/my-sales/:userId', async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+
+        const sales = await listSalesUseCase.execute(userId);
+
+        res.status(201).json({ sales });
+
+    } catch (err) {
+        res.status(402).json({ err });
+
+    }
+});
+
 
 router.get('/users', async (req: Request, res: Response) => {
     try {
@@ -108,8 +124,7 @@ router.post('/new-sale', async (req: Request, res: Response) => {
     try {
         const { tableId, obs, total, launchs, userId }: ISalesRepositoryCreate = req.body;
 
-        await setBusyTableUseCase.execute(tableId);
-
+        // await setBusyTableUseCase.execute(tableId);
         await createSaleUseCase.execute({ tableId, obs, total, closed: 'N', launchs, userId });
 
         res.status(201).json({ message: 'Venda criada com sucesso!' });

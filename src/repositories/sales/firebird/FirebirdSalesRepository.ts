@@ -11,6 +11,7 @@ export class FirebirdSalesRepository implements SalesRepository {
             OBS_PRODUTO,
             QTD_PRODUTO,
             DB_MOB_PEDIDO_LANCA.STATUS_LANCA,
+            ADICIONAL_PRODUTO,
             UNIT_PRODUTO,
             TOTAL_PRODUTO
             FROM DB_MOB_PEDIDO_CABE
@@ -37,12 +38,13 @@ export class FirebirdSalesRepository implements SalesRepository {
 
     async createSale({ closed, obs, tableId, total, launchs, userId }: ISalesRepositoryCreate) {
         try {
+            var saleId: { CD_PEDIDO: number } = await executeTransaction(`SELECT COALESCE(MAX(CD_PEDIDO), 0) + 1 as CD_PEDIDO FROM DB_MOB_PEDIDO_CABE`, []);
+
             var sale: { CD_PEDIDO: number } = await executeTransaction(`
                 INSERT INTO DB_MOB_PEDIDO_CABE (CD_PEDIDO, CD_MESA, OBS, TOTAL, FECHADO, CD_GARCOM)
-                VALUES (gen_id(db_mob_pedido_cabe, 1), ${tableId}, '${obs}', ${total}, '${closed}', ${userId})
+                VALUES (${saleId[0].CD_PEDIDO}, ${tableId}, '${obs}', ${total}, '${closed}', ${userId})
                 RETURNING CD_PEDIDO
             `, []);
-
 
             for (let i = 0; i < launchs.length; i++) {
                 await executeTransaction(`
@@ -59,6 +61,8 @@ export class FirebirdSalesRepository implements SalesRepository {
                      '${launchs[i].additional}'
                     )`, []);
             }
+
+            await executeTransaction(`update db_mob_mesas set ocupada = 'S', cd_pedido = ${saleId[0].CD_PEDIDO} where cd_mesa = ${tableId}`, []);
         } catch (err) {
             return Promise.reject(err);
         }
@@ -75,7 +79,7 @@ export class FirebirdSalesRepository implements SalesRepository {
                     await executeTransaction(`
                     INSERT INTO DB_MOB_PEDIDO_LANCA (iten, cd_produto, descricao_produto, unit_produto, desconto_produto, qtd_produto,
                         total_produto, obs_produto, cd_pedido, status_lanca, adicional_produto)
-                        VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${saleId}, '0', ${launchs[i].additional}
+                        VALUES ( gen_id(DB_MOB_PEDIDO_LANCA, 1), ${launchs[i].productId}, '${launchs[i].productDescription}', ${launchs[i].price}, ${launchs[i].descount}, ${launchs[i].quantity}, ${launchs[i].totalProduct}, '${launchs[i].obsProduct}', ${saleId}, '0', '${launchs[i].additional}'
                         )`, []);
                 } else {
                     await executeTransaction(`
@@ -84,9 +88,20 @@ export class FirebirdSalesRepository implements SalesRepository {
                     `, []);
                 }
             }
+
         } catch (err) {
             Promise.reject(err);
             console.log(err);
+        }
+    }
+
+    async listSales(userId: string) {
+        try {
+            const sales = await executeTransaction(`SELECT * FROM DB_MOB_PEDIDO_CABE WHERE CD_GARCOM = ${userId}`, []);
+
+            return sales;
+        } catch (error) {
+            return Promise.reject(error)
         }
     }
 
