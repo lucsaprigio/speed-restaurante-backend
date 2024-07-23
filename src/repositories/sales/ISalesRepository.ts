@@ -1,6 +1,6 @@
 export type ISalesRepository = {
     id?: string;
-    tableId: string;
+    tableId?: string;
     obs: string;
     closed?: string;
     total: number;

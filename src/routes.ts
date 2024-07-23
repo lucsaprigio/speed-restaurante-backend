@@ -150,9 +150,9 @@ router.get('/sale/:saleId', async (req: Request, res: Response) => {
 router.post('/update-sale/:saleId', async (req: Request, res: Response) => {
     try {
         const { saleId } = req.params;
-        const { launchs, tableId, obs, total, userId } = req.body;
+        const { launchs, obs, total, userId } = req.body;
 
-        await updateSaleUseCase.execute({ tableId, obs, total, userId });
+        await updateSaleUseCase.execute({ obs, total, userId, id: saleId });
 
         await addToSaleUseCase.execute({ launchs, saleId });
 

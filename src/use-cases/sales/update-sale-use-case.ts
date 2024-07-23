@@ -5,9 +5,9 @@ export class UpdateSaleUseCase {
         private salesRepository: SalesRepository
     ) { }
 
-    async execute({ obs, tableId, total, userId }: ISalesRepository) {
+    async execute({ obs, total, userId, id }: ISalesRepository) {
         try {
-            await this.salesRepository.updateSale({ obs, tableId, total, userId });
+            await this.salesRepository.updateSale({ obs, total, userId, id });
         } catch (err) {
             return Promise.reject(err)
         }

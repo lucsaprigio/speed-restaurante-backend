@@ -105,13 +105,9 @@ export class FirebirdSalesRepository implements SalesRepository {
         }
     }
 
-    async updateSale({ obs, tableId, total }: ISalesRepository) {
+    async updateSale({ obs, total, id }: ISalesRepository) {
         try {
-            await executeTransaction(`UPDATE db_mob_pedido_cabe
-            set cd_mesa = '${tableId}',
-                obs = '${obs}',
-                total = ${total}
-                `, [])
+            await executeTransaction(`UPDATE db_mob_pedido_cabe set obs = '${obs}', total = ${total} where cd_pedido = ${id}`, [])
         } catch (err) {
             return Promise.reject(err)
         }
