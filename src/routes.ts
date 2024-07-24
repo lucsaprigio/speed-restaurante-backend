@@ -18,12 +18,21 @@ import { ListCategoriesUseCase } from "./use-cases/categories/list-categories-us
 import { FirebirdCategoriesRepository } from "./repositories/categories/Firebird/FirebirdCategoriesRepository";
 import { AddToSateUseCase } from "./use-cases/sales/add-to-sale-use-case";
 import { UpdateSaleUseCase } from "./use-cases/sales/update-sale-use-case";
-import { ListAllProductsUseCase } from "./use-cases/products/list-all-products-use-case";
 import { SessionUserUseCase } from "./use-cases/users/session-user-use-case";
 import { ListProductComplementsUseCase } from "./use-cases/complements/list-product-complements-use-case";
 import { ListSalesUseCase } from "./use-cases/sales/list-sales-use-case";
 
+import { ThermalPrinter, PrinterTypes } from "node-thermal-printer";
+
 export const router = Router();
+
+const printer = new ThermalPrinter({
+    type: PrinterTypes.TANCA,
+    interface: 'tcp://192.168.15.87:9100',
+    options: {
+        timeout: 5000
+    }
+});
 
 const firebirdUserRepository = new FirebirdUserRepository();
 const firebirdTablesRepository = new FirebirdTablesRepository();
@@ -212,3 +221,24 @@ router.get('/categories', async (req: Request, res: Response) => {
     }
 });
 
+router.post('/print-sale', async (req: Request, res: Response) => {
+    try {
+        const { saleDetails } = req.body;
+
+        async function checkPrinterConnection() {
+            const isConnected = await printer.isPrinterConnected();
+            console.log('Printer connected:', isConnected);
+        }
+
+        checkPrinterConnection();
+
+        printer.alignLeft();
+        printer.println(saleDetails);
+
+        await printer.execute();
+
+        res.status(200).send(saleDetails);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
