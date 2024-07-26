@@ -13,10 +13,11 @@ export class FirebirdSalesRepository implements SalesRepository {
             DB_MOB_PEDIDO_LANCA.STATUS_LANCA,
             ADICIONAL_PRODUTO,
             UNIT_PRODUTO,
-            TOTAL_PRODUTO
+            TOTAL_PRODUTO,
+            DB_MOB_PEDIDO_CABE.DTA_TRANS
             FROM DB_MOB_PEDIDO_CABE
             INNER JOIN DB_MOB_PEDIDO_LANCA ON DB_MOB_PEDIDO_CABE.CD_PEDIDO = DB_MOB_PEDIDO_LANCA.CD_PEDIDO 
-            WHERE DB_MOB_PEDIDO_CABE.CD_PEDIDO = ${id}          
+            WHERE DB_MOB_PEDIDO_CABE.CD_PEDIDO = ${id} ORDER BY DB_MOB_PEDIDO_CABE.DTA_TRANS           
             `, []);
 
             return sale;
@@ -41,8 +42,8 @@ export class FirebirdSalesRepository implements SalesRepository {
             var saleId: { CD_PEDIDO: number } = await executeTransaction(`SELECT COALESCE(MAX(CD_PEDIDO), 0) + 1 as CD_PEDIDO FROM DB_MOB_PEDIDO_CABE`, []);
 
             var sale: { CD_PEDIDO: number } = await executeTransaction(`
-                INSERT INTO DB_MOB_PEDIDO_CABE (CD_PEDIDO, CD_MESA, OBS, TOTAL, FECHADO, CD_GARCOM)
-                VALUES (${saleId[0].CD_PEDIDO}, ${tableId}, '${obs}', ${total}, '${closed}', ${userId})
+                INSERT INTO DB_MOB_PEDIDO_CABE (CD_PEDIDO, CD_MESA, OBS, TOTAL, FECHADO, CD_GARCOM, DTA_TRANS)
+                VALUES (${saleId[0].CD_PEDIDO}, ${tableId}, '${obs}', ${total}, '${closed}', ${userId}, CURRENT_TIMESTAMP)
                 RETURNING CD_PEDIDO
             `, []);
 
@@ -97,7 +98,7 @@ export class FirebirdSalesRepository implements SalesRepository {
 
     async listSales(userId: string) {
         try {
-            const sales = await executeTransaction(`SELECT * FROM DB_MOB_PEDIDO_CABE WHERE CD_GARCOM = ${userId}`, []);
+            const sales = await executeTransaction(`SELECT * FROM DB_MOB_PEDIDO_CABE WHERE CD_GARCOM = ${userId} ORDER BY DTA_TRANS`, []);
 
             return sales;
         } catch (error) {
