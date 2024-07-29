@@ -232,10 +232,13 @@ router.post('/print-sale', async (req: Request, res: Response) => {
 
         checkPrinterConnection();
 
-        printer.alignLeft();
-        printer.println(saleDetails);
-
+        printer.alignCenter();   
+        printer.tableCustom([
+            { text: saleDetails, align: "CENTER", width: 3.50, bold: true, cols: 1 }
+        ]);
         await printer.execute();
+
+        printer.clear();
 
         res.status(200).send(saleDetails);
     } catch (err) {

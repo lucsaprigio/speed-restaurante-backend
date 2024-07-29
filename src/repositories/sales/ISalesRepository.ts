@@ -5,7 +5,7 @@ export type ISalesRepository = {
     closed?: string;
     total: number;
     userId: string;
-    created_at: string;
+    created_at?: string;
 }
 
 export type ISalesRepositoryCreate = {
