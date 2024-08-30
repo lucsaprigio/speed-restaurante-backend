@@ -1,8 +1,6 @@
 import { executeQuery, executeTransaction } from "../../../firebird/firebird";
 import { IProductComplements, IProductsRegistered, IProductsRepository, ProductsRepository } from "../IProductsRepository";
 
-
-
 export class FirebirdProductRepository implements ProductsRepository {
     async find(id: string) {
         try {
@@ -17,13 +15,17 @@ export class FirebirdProductRepository implements ProductsRepository {
 
     async list() {
         try {
-            const products: IProductsRepository[] = await executeQuery(`
-                SELECT CD_PRODUTO, DESCRICAO_PRODUTO, DB_MOB_REST_PROD.SUBDESCRICAO_PRODUTO, VR_UNITARIO, DB_MOB_REST_PROD.CD_CATEGORIA, DESCRICAO_CATEGORIA
+            const products = await executeQuery(`
+                SELECT CD_PRODUTO, DESCRICAO_PRODUTO, 
+                DB_MOB_REST_PROD.SUBDESCRICAO_PRODUTO, 
+                VR_UNITARIO, 
+                DB_MOB_REST_PROD.CD_CATEGORIA, 
+                DESCRICAO_CATEGORIA
                 FROM DB_MOB_REST_PROD
                 INNER JOIN DB_MOB_CATEGORIA ON DB_MOB_REST_PROD.CD_CATEGORIA = DB_MOB_CATEGORIA.CD_CATEGORIA
-                `, []);
+            `, []);
 
-            return products as IProductsRepository[];
+            return products;
         } catch (err) {
             return Promise.reject(err);
         }

@@ -3,7 +3,7 @@ export type IProductsRepository = {
     title: string;
     subtitle: string;
     price: number;
-    category: string;
+    category?: string;
 }
 
 export type IProductsRegistered = {
@@ -24,7 +24,7 @@ export type IProductComplements = {
 }
 
 export type ProductsRepository = {
-    list: () => Promise<IProductsRepository[]>;
+    list: () => Promise<IProductsRepository[] | any>;
     listProductRegistered: () => Promise<IProductsRegistered[]>;
     find: (id: string) => Promise<IProductsRepository[] | null>;
     listProductComplements: (id: string) => Promise<IProductComplements[] | null>

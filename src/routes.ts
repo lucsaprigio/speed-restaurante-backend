@@ -173,10 +173,10 @@ router.post('/update-sale/:saleId', async (req: Request, res: Response) => {
 
 router.get('/products', async (req: Request, res: Response) => {
     try {
-        const products: IProductsRepository[] = await listProductsUseCase.execute();
+        const products = await listProductsUseCase.execute();
         // const products: IProductsRegistered[] = await listAllProducts.execute();
 
-        res.status(201).json(products);
+        res.status(201).json({ products });
     } catch (err) {
         console.log(err)
         res.status(400).json(err);
@@ -232,7 +232,7 @@ router.post('/print-sale', async (req: Request, res: Response) => {
 
         checkPrinterConnection();
 
-        printer.alignCenter();   
+        printer.alignCenter();
         printer.tableCustom([
             { text: saleDetails, align: "CENTER", width: 3.50, bold: true, cols: 1 }
         ]);
